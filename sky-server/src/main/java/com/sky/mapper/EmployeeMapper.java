@@ -42,4 +42,6 @@ public interface EmployeeMapper {
      * @param employee
      */
     void update(Employee employee);
+
+    Employee getById(Long id);
 }
