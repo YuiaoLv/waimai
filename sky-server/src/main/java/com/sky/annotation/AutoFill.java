@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 自定义注解，用于标识需要自动填充的字段
+ * 自动填充
  */
 
 @Target(ElementType.METHOD)
