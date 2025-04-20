@@ -2,12 +2,14 @@ package com.sky.config;
 
 import io.minio.MinioClient;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
+@Slf4j
 @ConfigurationProperties(prefix = "minio.config")
 public class MinioConfiguration {
     /**
@@ -32,7 +34,12 @@ public class MinioConfiguration {
 
     @Bean
     public MinioClient getMinioClient() {
-        return MinioClient.builder().endpoint(url).credentials(accessKey, secretKey).build();
+        log.info("MinioClient初始化成功");
+        MinioClient minioClient = MinioClient.builder()
+                .endpoint(url)
+                .credentials(accessKey, secretKey)
+                .build();
+        return minioClient;
     }
 
 

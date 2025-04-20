@@ -41,7 +41,8 @@ sky:
 
 minio:
   config:
-    url: http://127.0.0.1:9000 #ip地址
+    url: http://127.0.0.1:9005 #ip地址
     accessKey: admin #  账号
     secretKey: 123456789 #  密码
+    secure: false #如果是true，则用的是https而不是http,默认值是true
     bucketName: "sky-take-out"  # 桶的名字 相当于文件夹
