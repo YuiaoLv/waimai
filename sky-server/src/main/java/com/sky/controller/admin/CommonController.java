@@ -35,6 +35,6 @@ public class CommonController {
     public Result<String> upload(@RequestParam("file")MultipartFile file) throws IOException {
         log.info("文件上传：{}",file);
         FileVO upload = uploadService.upload(file);
-        return Result.success();
+        return Result.success(upload.getUrl());
     }
 }

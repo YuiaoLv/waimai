@@ -1,4 +1,5 @@
 package com.sky.service.impl;
+import com.sky.constant.MessageConstant;
 import com.sky.vo.FileVO;
 import com.sky.config.MinioConfiguration;
 import io.minio.MinioClient;
@@ -40,13 +41,13 @@ public class MinioSysFileServiceImpl {
             client.putObject(args);
             log.info("文件上传成功");
             // 组装文件信息，返回前端 或者存入数据路
-            String url = "127.0.0.1:9000/browser/" + minioConfig.getBucketName() + "/" + originalFilename;
+            String url = minioConfig.getUrl()+"/" + minioConfig.getBucketName() + "/" + originalFilename;
             fileVO.setUrl(url);
             fileVO.setSize(file.getSize());
             fileVO.setFileName(originalFilename);
             fileVO.setExtname(extname);
         } catch (Exception e) {
-            throw new ServerException("文件上传异常" + e.getCause().toString());
+            throw new ServerException(MessageConstant.UPLOAD_FAILED + ":" + e.getCause().toString());
         }
         return fileVO;
     }
