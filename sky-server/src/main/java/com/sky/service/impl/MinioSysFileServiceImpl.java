@@ -40,7 +40,7 @@ public class MinioSysFileServiceImpl {
             client.putObject(args);
             log.info("文件上传成功");
             // 组装文件信息，返回前端 或者存入数据路
-            String url = minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + originalFilename;
+            String url = "127.0.0.1:9000/browser/" + minioConfig.getBucketName() + "/" + originalFilename;
             fileVO.setUrl(url);
             fileVO.setSize(file.getSize());
             fileVO.setFileName(originalFilename);
