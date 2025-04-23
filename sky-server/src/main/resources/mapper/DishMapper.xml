@@ -14,6 +14,18 @@
             (#{fr.dishId}, #{fr.name}, #{fr.value})
         </foreach>
     </insert>
+    <delete id="deleteById">
+        delete from sky_take_out.dish where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteflavorByDishId">
+        delete from sky_take_out.dish_flavor where dish_id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
     <select id="pageQuery" resultType="com.sky.vo.DishVO">
         select d.*, c.name as categoryName from sky_take_out.dish d left join sky_take_out.category c on c.id = d.category_id
         <where>
@@ -28,5 +40,12 @@
             </if>
         </where>
             order by d.create_time desc
+    </select>
+    <select id="getDishOnSale" resultType="java.lang.Long">
+        select id from sky_take_out.dish where id in
+        <foreach collection="list" item="id" open="(" close=")" separator=",">
+        #{id}
+        </foreach>
+        and status = 1
     </select>
 </mapper>

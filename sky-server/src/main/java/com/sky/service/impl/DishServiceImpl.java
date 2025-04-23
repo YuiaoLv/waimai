@@ -75,12 +75,9 @@ public class DishServiceImpl implements DishService {
     @Transactional   // 开启事务
     public void deleteBatch(List<Long> ids) {
         //判断当前菜品是否能够删除（是否在起售）
-        for(Long id : ids){
-            Dish dish = dishMapper.getById(id);
-            if(dish.getStatus().equals(StatusConstant.ENABLE)){
-                //起售中，不能删除
-                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
-            }
+        List<Long> dishOnSale = dishMapper.getDishOnSale(ids);
+        if(dishOnSale != null && !dishOnSale.isEmpty()){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
         }
         //判断当前菜品是否能够删除（是否关联套餐）
         List<Long> setMealIds = setMealDishMapper.getSetMealIdsByDishIds(ids);
@@ -89,9 +86,7 @@ public class DishServiceImpl implements DishService {
         }
 
         //删除菜品及关联的口味数据
-        for(Long id : ids){
-            dishMapper.deleteById(id);
-            dishMapper.deleteFlavorByDishId(id);
-        }
+        dishMapper.deleteById(ids);
+        dishMapper.deleteflavorByDishId(ids);
     }
 }
