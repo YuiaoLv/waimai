@@ -14,13 +14,43 @@
             (#{fr.dishId}, #{fr.name}, #{fr.value})
         </foreach>
     </insert>
+    <update id="update">
+        update sky_take_out.dish
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="image != null">
+                image = #{image},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
     <delete id="deleteById">
         delete from sky_take_out.dish where id in
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
         </foreach>
     </delete>
-    <delete id="deleteflavorByDishId">
+    <delete id="deleteFlavorsByDishId">
         delete from sky_take_out.dish_flavor where dish_id in
         <foreach collection="list" item="id" open="(" close=")" separator=",">
             #{id}
@@ -39,12 +69,12 @@
                 and d.status = #{status}
             </if>
         </where>
-            order by d.create_time desc
+        order by d.create_time desc
     </select>
     <select id="getDishOnSale" resultType="java.lang.Long">
         select id from sky_take_out.dish where id in
         <foreach collection="list" item="id" open="(" close=")" separator=",">
-        #{id}
+            #{id}
         </foreach>
         and status = 1
     </select>

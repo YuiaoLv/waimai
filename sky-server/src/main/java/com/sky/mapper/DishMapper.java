@@ -57,12 +57,26 @@ public interface DishMapper {
 
     void deleteById(List<Long> ids);
     /**
-     * 根据菜品id删除菜品口味
+     * 根据菜品id批量删除菜品口味
      */
-    void deleteflavorByDishId(List<Long> ids);
+    void deleteFlavorsByDishId(List<Long> ids);
 
+    /**
+     * 根据菜品id单独删除菜品口味
+     */
+    @Delete("delete from sky_take_out.dish_flavor where dish_id = #{id}")
+    void deleteFlavorByDishId(Long id);
+    /**
+     * 根据id查询菜品口味
+     */
+    @Select("select * from sky_take_out.dish_flavor where dish_id = #{dishId}")
+    List<DishFlavor> getFlavorsByDishId(Long dishId);
 
-
+    /**
+     * 根据id修改菜品
+     */
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Dish dish);
 
 
 }
