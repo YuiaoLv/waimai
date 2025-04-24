@@ -24,4 +24,7 @@ public interface SetMealMapper {
      */
     @AutoFill(value = OperationType.INSERT)
     void insert(Setmeal setmeal);
+
+    @AutoFill(value = OperationType.UPDATE)
+    void update(Setmeal setmeal);
 }
