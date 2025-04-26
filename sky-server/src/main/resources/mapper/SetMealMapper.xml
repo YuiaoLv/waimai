@@ -54,7 +54,20 @@
         </where>
         order by s.create_time desc
     </select>
+    <select id="getSetMealOnSale" resultType="com.sky.entity.Setmeal">
+        select * from sky_take_out.setmeal where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and status = 1
+    </select>
 
+    <delete id="deleteBatch">
+        delete from sky_take_out.setmeal where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
 </mapper>
 
 

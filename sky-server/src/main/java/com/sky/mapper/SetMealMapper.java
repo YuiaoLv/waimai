@@ -10,6 +10,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Mapper
 public interface SetMealMapper {
 
@@ -36,9 +38,17 @@ public interface SetMealMapper {
     void update(Setmeal setmeal);
 
     /**
-     * 根据套餐id查询套餐数据
-     * @param id
-     * @return
+     * 分页查询
      */
     Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    /*
+     * 判断删除的套餐是否在售
+     */
+    List<Setmeal> getSetMealOnSale(List<Long> ids);
+
+    /**
+     * 批量删除套餐
+     */
+    void deleteBatch(List<Long> ids);
 }
