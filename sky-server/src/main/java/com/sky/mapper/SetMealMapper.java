@@ -51,4 +51,7 @@ public interface SetMealMapper {
      * 批量删除套餐
      */
     void deleteBatch(List<Long> ids);
+
+    @Select("select * from sky_take_out.setmeal where id = #{id}")
+    Setmeal getById(Long id);
 }
