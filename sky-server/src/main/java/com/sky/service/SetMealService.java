@@ -29,4 +29,9 @@ public interface SetMealService {
      * 根据id查询套餐
      */
     SetmealVO getByIdWithDish(Long id);
+
+    /**
+     * 修改套餐
+     */
+    void update(SetmealDTO setmealDTO);
 }
