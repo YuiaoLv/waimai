@@ -17,6 +17,7 @@ import java.util.List;
 @Mapper
 public interface DishMapper {
 
+
     /**
      * 根据分类id查询菜品数量
      * @param categoryId
@@ -80,4 +81,8 @@ public interface DishMapper {
 
 
     List<Dish> getDishByCategoryId(Dish dish);
+
+    @Select("select a.* from sky_take_out.dish a left join sky_take_out.setmeal_dish b on a.id = b.dish_id where b.setmeal_id = #{setmealId}")
+    List<Dish> getBySetMealId(Long id);
+
 }
