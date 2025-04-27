@@ -17,11 +17,11 @@ public class RedisConfiguration {
         RedisTemplate redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
         // 设置key的序列化器 解决乱码
-//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
         // 设置value的序列化器 解决乱码
 //        redisTemplate.setValueSerializer(new StringRedisSerializer());
         // 直接设置默认的序列化器
-        redisTemplate.setDefaultSerializer(new StringRedisSerializer());
+//        redisTemplate.setDefaultSerializer(new StringRedisSerializer());//居然还会报错？？？？？？
         return redisTemplate;
     }
 }
