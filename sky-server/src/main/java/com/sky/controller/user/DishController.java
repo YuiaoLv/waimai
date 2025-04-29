@@ -25,8 +25,6 @@ public class DishController {
     @Autowired
     private DishService dishService;
 
-    @Autowired
-    private RedisTemplate redisTemplate;
     /**
      * 根据分类id查询菜品
      *
