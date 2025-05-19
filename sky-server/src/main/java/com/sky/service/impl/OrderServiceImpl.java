@@ -165,6 +165,11 @@ public class OrderServiceImpl  implements OrderService {
 
     }
 
+    /**
+     * 条件查询订单
+     * @param ordersPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(),  ordersPageQueryDTO.getPageSize());
@@ -182,6 +187,7 @@ public class OrderServiceImpl  implements OrderService {
 
         return orderStatisticsVO;
     }
+
 
     private List<OrderVO> getOrderVOList(Page<Orders> page) {
         List<OrderVO> orderVOList = new ArrayList<>();
@@ -209,5 +215,14 @@ public class OrderServiceImpl  implements OrderService {
             return orderDish;
         }).collect(Collectors.toList());
         return String.join("", orderDishList);
+    }
+
+    /**
+     * 确认订单
+     * @param orders
+     */
+    public void confirm(Orders orders) {
+        orders.setStatus(Orders.CONFIRMED);
+        orderMapper.update(orders);
     }
 }
