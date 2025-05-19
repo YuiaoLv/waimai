@@ -25,6 +25,11 @@ public interface OrderMapper {
     @Select("select * from sky_take_out.orders where number = #{orderNumber}")
     Orders getByNumber(String orderNumber);
 
+    /**
+     * 分页查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
     Page<Orders> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
     @Select("select * from sky_take_out.orders where id = #{id}")
@@ -35,4 +40,7 @@ public interface OrderMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    @Select("select count(id) from sky_take_out.orders where status = #{status}")
+    Integer countStatus(Integer status);
 }

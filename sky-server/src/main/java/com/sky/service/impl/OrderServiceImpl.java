@@ -19,6 +19,7 @@ import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +95,11 @@ public class OrderServiceImpl  implements OrderService {
 
     }
 
+    /**
+     * 订单分页查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
     @Override
     public PageResult pageQuery4Admin(OrdersPageQueryDTO ordersPageQueryDTO) {
         PageHelper.startPage(ordersPageQueryDTO.getPage(),  ordersPageQueryDTO.getPageSize());
@@ -112,6 +118,11 @@ public class OrderServiceImpl  implements OrderService {
         return new PageResult(page.getTotal()   ,list);
     }
 
+    /**
+     * 订单详情查询
+     * @param id
+     * @return
+     */
     @Override
     public OrderVO getOrderDetail(Long id) {
         Orders orders = orderMapper.getById(id);
@@ -152,5 +163,51 @@ public class OrderServiceImpl  implements OrderService {
 
         shoppingCartMapper.insertBatch(shoppingCartList);
 
+    }
+
+    @Override
+    public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
+        PageHelper.startPage(ordersPageQueryDTO.getPage(),  ordersPageQueryDTO.getPageSize());
+        Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        List<OrderVO> list =  getOrderVOList(page);
+        return new PageResult(page.getTotal(),list);
+    }
+
+    @Override
+    public OrderStatisticsVO statistics() {
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setToBeConfirmed(orderMapper.countStatus(Orders.TO_BE_CONFIRMED));
+        orderStatisticsVO.setConfirmed(orderMapper.countStatus(Orders.CONFIRMED));
+        orderStatisticsVO.setDeliveryInProgress(orderMapper.countStatus(Orders.DELIVERY_IN_PROGRESS));
+
+        return orderStatisticsVO;
+    }
+
+    private List<OrderVO> getOrderVOList(Page<Orders> page) {
+        List<OrderVO> orderVOList = new ArrayList<>();
+        List<Orders> ordersList = page.getResult();
+        for (Orders orders : ordersList) {
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(orders,orderVO);
+            String orderDishes = getOrderDishesStr(orders);
+            orderVO.setOrderDishes(orderDishes);
+            orderVOList.add(orderVO);
+        }
+        return orderVOList;
+    }
+
+    /**
+     * 根据订单id获取菜品信息字符串
+     * @param orders
+     * @return
+     */
+    private String getOrderDishesStr(Orders orders) {
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+
+        List<String> orderDishList = orderDetailList.stream().map(x -> {
+            String orderDish = x.getName() + "*" + x.getNumber() + ";";
+            return orderDish;
+        }).collect(Collectors.toList());
+        return String.join("", orderDishList);
     }
 }
