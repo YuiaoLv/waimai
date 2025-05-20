@@ -73,6 +73,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setPhone(addressBook.getPhone());
         orders.setUserId(BaseContext.getCurrentId());
         orders.setConsignee(addressBook.getConsignee());
+        orders.setAddress(addressBook.getDetail());
         orderMapper.insert(orders);
         //向订单明细表插入多条数据
         List<OrderDetail> orderDetailList = new ArrayList<>();
@@ -129,7 +130,7 @@ public class OrderServiceImpl implements OrderService {
      */
     public OrderVO getOrderDetail(Long id) {
         Orders orders = orderMapper.getById(id);
-        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         OrderVO orderVO = new OrderVO();
         BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);

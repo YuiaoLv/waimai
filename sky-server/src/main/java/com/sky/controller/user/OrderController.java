@@ -41,7 +41,6 @@ public class OrderController {
 
     /**
      * 分页查询历史订单
-     * @param ordersPageQueryDTO
      * @return
      */
     @GetMapping("/historyOrders")
