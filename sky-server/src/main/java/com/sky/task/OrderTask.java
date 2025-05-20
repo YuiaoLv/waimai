@@ -18,9 +18,11 @@ public class OrderTask {
     private OrderMapper orderMapper;
 
     @Scheduled(cron = "0 * * * * ?" ) //每分钟执行一次
+    //@Scheduled(cron = "1/5 * * * * ?  ") test
     public void progressTimeoutOrder(){
         log.info("定时处理超时未支付的订单:{}", LocalDateTime.now());
-        List<Orders> ordersList = orderMapper.getByStatusAndOrderTimeLT(Orders.PENDING_PAYMENT, LocalDateTime.now().plusMinutes(-15));
+        LocalDateTime time = LocalDateTime.now().plusMinutes(-15);
+        List<Orders> ordersList = orderMapper.getByStatusAndOrderTimeLT(Orders.PENDING_PAYMENT,time);
         if(ordersList != null && !ordersList.isEmpty()){
             for (Orders orders : ordersList) {
                 orders.setStatus(Orders.CANCELLED);
@@ -31,6 +33,7 @@ public class OrderTask {
         }
     }
     @Scheduled(cron = "0 0 1/24 * * ? ") //每24小时执行一次
+    //@Scheduled(cron = "0/5 * * * * ? ")
     public void processDeliveryTimeoutOrder(){
         log.info("定时处理处于派送中状态的订单:{}", LocalDateTime.now());
         List<Orders> ordersList = orderMapper.getByStatusAndOrderTimeLT(Orders.DELIVERY_IN_PROGRESS, LocalDateTime.now().plusMinutes(-60));

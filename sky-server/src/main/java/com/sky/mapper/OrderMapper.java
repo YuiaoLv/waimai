@@ -47,6 +47,11 @@ public interface OrderMapper {
     @Select("select count(id) from sky_take_out.orders where status = #{status}")
     Integer countStatus(Integer status);
 
+    /**
+     * 根据状态查询订单
+     * @param status
+     * @return
+     */
     @Select("select * from sky_take_out.orders where status = #{status} and order_time < #{orderTime}")
-    List<Orders> getByStatusAndOrderTimeLT(Integer pendingPayment, LocalDateTime localDateTime);
+    List<Orders> getByStatusAndOrderTimeLT(Integer status, LocalDateTime orderTime);
 }
