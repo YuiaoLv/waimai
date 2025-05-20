@@ -12,7 +12,7 @@
                  #{amount}, #{remark}, #{userName}, #{phone}, #{address}, #{consignee}, #{cancelReason}, #{rejectionReason},
                 #{cancelTime}, #{estimatedDeliveryTime}, #{deliveryStatus}, #{deliveryTime}, #{packAmount}, #{tablewareNumber}, #{tablewareStatus})
     </insert>
-    <select id="pageQuery" resultType="com.sky.entity.Orders">
+    <select id="pageQuery" resultType="Orders">
         select * from orders
         <where>
             <if test="number != null and number!=''">

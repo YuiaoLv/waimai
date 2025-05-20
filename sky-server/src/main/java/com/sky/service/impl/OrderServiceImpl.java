@@ -35,13 +35,13 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class OrderServiceImpl  implements OrderService {
+public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private OrderMapper orderMapper;
 
     @Autowired
-    private OrderDetailMapper  orderDetailMapper;
+    private OrderDetailMapper orderDetailMapper;
 
     @Autowired
     private AddressBookMapper addressBookMapper;
@@ -54,7 +54,7 @@ public class OrderServiceImpl  implements OrderService {
     public OrderSubmitVO submitOrder(OrdersSubmitDTO ordersSubmitDTO) {
 
         //处理地址为空问题
-        AddressBook addressBook =addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
+        AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
         if (addressBook == null) {
             throw new AddressBookBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
@@ -77,8 +77,8 @@ public class OrderServiceImpl  implements OrderService {
         //向订单明细表插入多条数据
         List<OrderDetail> orderDetailList = new ArrayList<>();
         for (ShoppingCart shoppingCart : shoppingCartList) {
-            OrderDetail  orderDetail = new OrderDetail();
-            BeanUtils.copyProperties(shoppingCart,orderDetail);
+            OrderDetail orderDetail = new OrderDetail();
+            BeanUtils.copyProperties(shoppingCart, orderDetail);
             orderDetail.setOrderId(orders.getId());
             orderDetailList.add(orderDetail);
         }
@@ -97,38 +97,41 @@ public class OrderServiceImpl  implements OrderService {
 
     /**
      * 订单分页查询
-     * @param ordersPageQueryDTO
+     *
      * @return
      */
     @Override
-    public PageResult pageQuery4Admin(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(),  ordersPageQueryDTO.getPageSize());
+    public PageResult pageQuery4Admin(int pageNum, int pageSize, Integer status) {
+        PageHelper.startPage(pageNum, pageSize);
+        OrdersPageQueryDTO ordersPageQueryDTO = new OrdersPageQueryDTO();
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        ordersPageQueryDTO.setStatus(status);
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
         List<OrderVO> list = new ArrayList<>();
-        if(page!=null&&page.getTotal()>0){
+        if (page != null && page.getTotal() > 0) {
             for (Orders orders : page) {
                 Long orderId = orders.getId();
                 List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderId);
                 OrderVO orderVO = new OrderVO();
-                BeanUtils.copyProperties(orders,orderVO);
+                BeanUtils.copyProperties(orders, orderVO);
                 orderVO.setOrderDetailList(orderDetailList);
                 list.add(orderVO);
             }
         }
-        return new PageResult(page.getTotal()   ,list);
+        return new PageResult(page.getTotal(), list);
     }
 
     /**
      * 订单详情查询
+     *
      * @param id
      * @return
      */
-    @Override
     public OrderVO getOrderDetail(Long id) {
         Orders orders = orderMapper.getById(id);
-        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
+        List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orders.getId());
         OrderVO orderVO = new OrderVO();
-        BeanUtils.copyProperties(orders,orderVO);
+        BeanUtils.copyProperties(orders, orderVO);
         orderVO.setOrderDetailList(orderDetailList);
         return orderVO;
     }
@@ -136,10 +139,10 @@ public class OrderServiceImpl  implements OrderService {
     @Override
     public void userCancelById(Long id) {
         Orders orders = orderMapper.getById(id);
-        if(orders==null){
+        if (orders == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
         }
-        if(orders.getStatus()>2){
+        if (orders.getStatus() > 2) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
         orders.setStatus(Orders.CANCELLED);
@@ -155,7 +158,7 @@ public class OrderServiceImpl  implements OrderService {
         List<ShoppingCart> shoppingCartList = orderDetailList.stream().map(x -> {
             ShoppingCart shoppingCart = new ShoppingCart();
 
-            BeanUtils.copyProperties(x, shoppingCart,"id");
+            BeanUtils.copyProperties(x, shoppingCart, "id");
             shoppingCart.setUserId(BaseContext.getCurrentId());
             shoppingCart.setCreateTime(LocalDateTime.now());
             return shoppingCart;
@@ -167,15 +170,16 @@ public class OrderServiceImpl  implements OrderService {
 
     /**
      * 条件查询订单
+     *
      * @param ordersPageQueryDTO
      * @return
      */
     @Override
     public PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(),  ordersPageQueryDTO.getPageSize());
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
-        List<OrderVO> list =  getOrderVOList(page);
-        return new PageResult(page.getTotal(),list);
+        List<OrderVO> list = getOrderVOList(page);
+        return new PageResult(page.getTotal(), list);
     }
 
     @Override
@@ -194,7 +198,7 @@ public class OrderServiceImpl  implements OrderService {
         List<Orders> ordersList = page.getResult();
         for (Orders orders : ordersList) {
             OrderVO orderVO = new OrderVO();
-            BeanUtils.copyProperties(orders,orderVO);
+            BeanUtils.copyProperties(orders, orderVO);
             String orderDishes = getOrderDishesStr(orders);
             orderVO.setOrderDishes(orderDishes);
             orderVOList.add(orderVO);
@@ -204,6 +208,7 @@ public class OrderServiceImpl  implements OrderService {
 
     /**
      * 根据订单id获取菜品信息字符串
+     *
      * @param orders
      * @return
      */
@@ -219,6 +224,7 @@ public class OrderServiceImpl  implements OrderService {
 
     /**
      * 确认订单
+     *
      * @param orders
      */
     public void confirm(Orders orders) {

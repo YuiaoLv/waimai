@@ -18,10 +18,9 @@ public interface OrderService {
 
     /**
      * 订单分页查询
-     * @param ordersPageQueryDTO
      * @return
      */
-    PageResult pageQuery4Admin(OrdersPageQueryDTO ordersPageQueryDTO);
+    PageResult pageQuery4Admin(int page, int pageSize, Integer status);
 
     OrderVO getOrderDetail(Long id);
 

@@ -46,15 +46,14 @@ public class OrderController {
      */
     @GetMapping("/historyOrders")
     @ApiOperation("查看历史订单")
-    public Result<PageResult> page(OrdersPageQueryDTO ordersPageQueryDTO) {
-        log.info("分页查询历史订单：{}", ordersPageQueryDTO);
-        PageResult pageResult = orderService.pageQuery4Admin(ordersPageQueryDTO);
+    public Result<PageResult> page(int page, int pageSize, Integer status) {
+        PageResult pageResult = orderService.pageQuery4Admin(page, pageSize, status);
         return Result.success(pageResult);
     }
 
     @GetMapping("/orderDetail/{id}")
     @ApiOperation("查看订单详情")
-    public Result<OrderVO> getOrderDetail(@PathVariable Long id) {
+    public Result<OrderVO> getOrderDetail(@PathVariable("id") Long id) {
         log.info("查看订单详情：{}", id);
         OrderVO orderVO = orderService.getOrderDetail(id);
         return Result.success(orderVO);
@@ -62,7 +61,7 @@ public class OrderController {
 
     @PutMapping("/cancel/{id}")
     @ApiOperation("取消订单")
-    public Result cancel(@PathVariable Long id) throws Exception {
+    public Result cancel(@PathVariable("id") Long id) throws Exception {
         log.info("取消订单：{}", id);
         orderService.userCancelById(id);
         return Result.success();
@@ -70,7 +69,7 @@ public class OrderController {
 
     @PostMapping("/repetition/{id}")
     @ApiOperation("再来一单")
-    public Result repetition(@PathVariable Long id) {
+    public Result repetition(@PathVariable("id") Long id) {
         log.info("再来一单：{}", id);
         orderService.repetition(id);
         return Result.success();
