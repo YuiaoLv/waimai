@@ -91,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
         }
         orderDetailMapper.insertBatch(orderDetailList);
         //清空购物车数据
-        shoppingCartMapper.deleteById(BaseContext.getCurrentId());
+        shoppingCartMapper.deleteByUserId(BaseContext.getCurrentId());
         //返回OrderSubmitVO数据
         OrderSubmitVO orderSubmitVO = OrderSubmitVO.builder().id(orders.getId())
                 .orderNumber(orders.getNumber())
@@ -199,7 +199,10 @@ public class OrderServiceImpl implements OrderService {
         return orderVO;
     }
 
-    @Override
+    /**
+     * 用户取消订单
+     * @param id
+     */
     public void userCancelById(Long id) {
         Orders orders = orderMapper.getById(id);
         if (orders == null) {
@@ -208,13 +211,19 @@ public class OrderServiceImpl implements OrderService {
         if (orders.getStatus() > 2) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
+        if(orders.getPayStatus()==1){
+            orders.setPayStatus(Orders.REFUND);
+        }
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelReason("用户取消");
         orders.setCancelTime(LocalDateTime.now());
         orderMapper.update(orders);
     }
 
-    @Override
+    /**
+     * 再来一单
+     * @param id
+     */
     public void repetition(Long id) {
         List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(id);
         //将订单详情对象转换为购物车对象
@@ -245,7 +254,10 @@ public class OrderServiceImpl implements OrderService {
         return new PageResult(page.getTotal(), list);
     }
 
-    @Override
+    /**
+     * 统计订单数据
+     * @return
+     */
     public OrderStatisticsVO statistics() {
         OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
         orderStatisticsVO.setToBeConfirmed(orderMapper.countStatus(Orders.TO_BE_CONFIRMED));
@@ -292,7 +304,7 @@ public class OrderServiceImpl implements OrderService {
     public void confirm(OrdersConfirmDTO ordersConfirmDTO) {
         Orders orders = Orders.builder()
                 .id(ordersConfirmDTO.getId())
-                .status(ordersConfirmDTO.getStatus())
+                .status(Orders.CONFIRMED)
                 .build();
         orderMapper.update(orders);
     }
@@ -311,8 +323,11 @@ public class OrderServiceImpl implements OrderService {
         if (ordersDB.getStatus() != 2) {
             throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
         }
-        //还要退款，但这里没有实现支付功能所以不再考虑
-
+        //如果支付则还要退款
+        if(ordersDB.getPayStatus()==1){
+            log.info("商家拒单退款");
+            ordersDB.setPayStatus(Orders.REFUND);
+        }
         //更新订单状态
         Orders orders = Orders.builder()
                 .id(ordersDB.getId())
@@ -325,7 +340,7 @@ public class OrderServiceImpl implements OrderService {
 
 
     /**
-     * 取消订单
+     * 取消订单（取消和拒单的区别是作用时订单的状态不同）
      * @param ordersCancelDTO
      * @throws Exception
      */
@@ -334,6 +349,10 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersDB = orderMapper.getById(ordersCancelDTO.getId());
         if (ordersDB == null) {
             throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+        if(ordersDB.getPayStatus()==1){
+            log.info("商家取消退款");
+            ordersDB.setPayStatus(Orders.REFUND);
         }
 
         //更新订单状态
