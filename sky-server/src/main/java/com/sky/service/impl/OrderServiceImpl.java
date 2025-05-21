@@ -1,8 +1,10 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.WebSocket.WebSocketServer;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.*;
@@ -25,9 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +53,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private WeChatPayUtil weChatPayUtil;
+    @Autowired
+    private WebSocketServer webSocket;
 
     @Override
     @Transactional
@@ -98,6 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 .orderAmount(orders.getAmount())
                 .orderTime(orders.getOrderTime())
                 .build();
+
         return orderSubmitVO;
 
     }
@@ -133,6 +136,14 @@ public class OrderServiceImpl implements OrderService {
         Integer OrderStatus = Orders.TO_BE_CONFIRMED;  //订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
         orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
+
+        Map map = new HashMap();
+        map.put("type", 1);      //"1"代表新订单
+        map.put("orderId", this.orders.getId());
+        map.put("content", "订单号：" + this.orders.getNumber());
+        String json = JSON.toJSONString(map);
+        webSocket.sendToAllClient(json);
+
         return vo;
     }
 
@@ -155,6 +166,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
 
         orderMapper.update(orders);
+
+        //消息要包含三个数据：type，orderID，content
+/*        Map map = new HashMap();
+        map.put("type", 1);      //"1"代表新订单
+        map.put("orderId", ordersDB.getId());
+        map.put("content", "订单号：" + outTradeNo);
+        webSocket.sendToAllClient(JSON.toJSONString(map));
+        应该写在这，但由于直接模拟，所以直接放在了payment中*/
     }
 
 
