@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface SetMealDishMapper {
@@ -31,4 +32,6 @@ public interface SetMealDishMapper {
 
     @Delete("delete from sky_take_out.setmeal_dish where setmeal_id = #{setmealId}")
     void deleteBySetMealId(Long setmealId);
+
+    Integer countByMap(Map map);
 }
