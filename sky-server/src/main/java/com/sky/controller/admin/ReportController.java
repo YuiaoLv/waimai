@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/admin/report")
@@ -59,5 +62,13 @@ public class ReportController {
         log.info("销量排名top10:{}{}", begin,end);
         SalesTop10ReportVO salesTop10ReportVO = reportService.top10(begin, end);
         return Result.success(salesTop10ReportVO);
+    }
+
+    @GetMapping("/export")
+    @ApiOperation("导出数据")
+    public Result export(HttpServletResponse response){
+        log.info("导出数据");
+        reportService.export(response);
+        return Result.success();
     }
 }
