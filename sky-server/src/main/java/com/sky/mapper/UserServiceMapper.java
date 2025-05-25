@@ -25,6 +25,4 @@ public interface UserServiceMapper {
 
     Integer countByMap(Map map);
 
-    @Select("select count(*) from sky_take_out.user")
-    Integer count();
 }
