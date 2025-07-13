@@ -1,9 +1,6 @@
 package com.sky.service.impl;
-
 import com.sky.dto.GoodsSalesDTO;
-import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
-import com.sky.mapper.OrderDetailMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserServiceMapper;
 import com.sky.service.ReportService;
@@ -18,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
